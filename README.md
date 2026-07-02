@@ -87,51 +87,37 @@ npm run build
 
 `news` / `products` / トップページはビルド時にmicroCMSへ実際にAPIリクエストを行い静的生成されるため、**ビルド前に `MICROCMS_SERVICE_DOMAIN` / `MICROCMS_API_KEY` を有効な値に設定しておく必要があります**。未設定・不正な値の場合ビルドは失敗します。
 
-## Xserver Staticへのデプロイと自動更新
+## Cloudflare Pagesへのデプロイ
 
-`.github/workflows/deploy.yml` により、GitHub Actions上で `npm run build` を実行しFTPでXserver Staticへ同期します。以下の3経路のいずれかでワークフローが起動します。
+1. Cloudflare Pagesのプロジェクト作成時、GitHubリポジトリ（`ironnaoji3/testsite`）を連携し、以下のビルド設定を指定します。
+   - Build command: `npm run build`
+   - Build output directory: `dist`
+2. Pagesプロジェクトの `Settings > Environment variables` に、`.env.example` と同じ5つの環境変数を設定します（Production / Preview 両方）。
+3. Resend側で送信元ドメインの検証（DNSレコードの設定）を行ってください。未検証の場合、メール送信が失敗します。
 
-- `main` ブランチへのpush（通常のコード変更）
-- 手動実行（`workflow_dispatch`）
-- microCMSのコンテンツ更新（Webhook経由の `repository_dispatch`）
+これでGitHubの `main` ブランチにpushするたびにCloudflare Pagesが自動でビルド・デプロイします。お問い合わせフォームの送信API（`src/pages/api/contact.ts`）もCloudflare Pages Functionsとしてそのまま動作します。
 
-> **注意**: このプロジェクトは `@astrojs/cloudflare` アダプターを使用しており、お問い合わせフォームの送信API（`src/pages/api/contact.ts`）はCloudflare Pages Functions（サーバーレス実行環境）を前提にしています。Xserver Staticは静的ファイルのみをホスティングするため、**このワークフローでデプロイした場合お問い合わせフォームの送信は動作しません**。別途、フォーム送信先を用意する対応が必要です。
+## microCMS更新時の自動デプロイ
 
-### 1. Xserver StaticでFTPを有効化
+コードの変更がなくてもmicroCMSの記事更新だけで再デプロイさせたい場合は、Cloudflare Pagesの **Deploy Hook**（デプロイ専用のWebhook URL。呼び出すだけで新しいビルドが走る）をmicroCMSのWebhookから叩く構成にします。GitHub Actionsや中継サーバーは不要です。
 
-Xserver Staticの管理画面でFTPの利用を有効にし、FTPサーバー名・ユーザー名・パスワードを控えます。
+### 1. Cloudflare PagesでDeploy Hookを作成
 
-### 2. GitHubにRepository secretsを登録
+Pagesプロジェクトの `Settings > Builds & deployments > Deploy hooks` で、対象ブランチ（`main`）を指定して新規作成します。表示されたURLを控えます。
 
-`Settings > Secrets and variables > Actions` で以下を登録します。
+### 2. microCMSにWebhookを設定
 
-| Secret名 | 値 |
-| --- | --- |
-| `FTP_SERVER` | Xserver StaticのFTPサーバー名 |
-| `FTP_USERNAME` | FTPユーザー名 |
-| `FTP_PASSWORD` | FTPパスワード |
-| `MICROCMS_SERVICE_DOMAIN` | `.env` と同じ値 |
-| `MICROCMS_API_KEY` | `.env` と同じ値 |
+各API（`news` / `products` / `categories`）の管理画面 → Webhook → 「+ 追加」→「汎用Webhook」で以下を設定します。
 
-### 3. GitHub Personal Access Tokenを発行（microCMS Webhook用）
-
-1. GitHubの `Settings > Developer settings > Fine-grained tokens` で新規発行
-2. 対象リポジトリをこのリポジトリのみに限定
-3. Repository permissionsで `Contents: Read and write` を付与
-
-### 4. microCMSにWebhookを設定
-
-各API（`news` / `products` / `categories`）の管理画面 → Webhook → 「+ 追加」→ サービス選択で **「GitHub Actions」** を選び、以下を入力します。
-
-- **GitHubトークン**: 手順3で発行したPersonal Access Token
-- **リポジトリのユーザー名**: `ironnaoji3`
-- **リポジトリ名**: `testsite`
-- **トリガーイベント名**: `microcms`（`deploy.yml` の `repository_dispatch.types` と一致させる）
+- リクエストURL: 手順1で控えたDeploy Hook URL
+- リクエストメソッド: POST
 - 通知タイミング: コンテンツの作成・更新・削除・公開など必要なものを選択
 
-### 5. 動作確認
+Deploy Hookはリクエストボディを問わないため、microCMSの汎用Webhookをそのまま指定するだけで動作します。
 
-`Actions` タブから `Deploy to Xserver Static` を手動実行（`workflow_dispatch`）してデプロイが成功することを確認したうえで、microCMSでコンテンツを更新し、Webhook経由でワークフローが自動起動することを確認してください。
+### 3. 動作確認
+
+microCMSでコンテンツを更新すると、Cloudflare Pagesの `Deployments` タブに新しいビルドが数秒以内に現れることを確認してください。
 
 ## ディレクトリ構成
 
