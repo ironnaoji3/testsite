@@ -1,0 +1,50 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { microcmsClient } from '@/lib/microcms';
+import type { Product } from '@/types/microcms';
+
+export async function getStaticPaths() {
+  const { contents: productList } = await microcmsClient.getList<Product>({
+    endpoint: 'products',
+    queries: { fields: ['id'], limit: 100 },
+  });
+
+  return productList.map((product) => ({
+    params: { slug: product.id },
+  }));
+}
+
+const { slug } = Astro.params;
+const product = await microcmsClient.getListDetail<Product>({
+  endpoint: 'products',
+  contentId: slug!,
+});
+---
+
+<BaseLayout title={product.name} description={product.description}>
+  <article class="p-product-detail">
+    <div class="l-container">
+      <div class="p-product-detail__layout">
+        <div class="p-product-detail__image">
+          <img
+            src={`${product.thumbnail.url}?w=640&h=360&fit=crop`}
+            width="640"
+            height="360"
+            alt={product.name}
+          />
+        </div>
+        <div>
+          <a href={`/products/category/${product.category.id}`} class="p-product-detail__category">
+            {product.category.name}
+          </a>
+          <h1 class="p-product-detail__name">{product.name}</h1>
+          {typeof product.price === 'number' && (
+            <p class="p-product-detail__price">¥{product.price.toLocaleString('ja-JP')}</p>
+          )}
+          <p class="p-product-detail__description">{product.description}</p>
+        </div>
+      </div>
+      <div class="p-product-detail__body" set:html={product.body} />
+    </div>
+  </article>
+</BaseLayout>

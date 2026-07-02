@@ -1,0 +1,20 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { COMPANY_INFO } from '@/consts';
+---
+
+<BaseLayout title="会社概要">
+  <section class="p-company">
+    <div class="l-container">
+      <h1 class="c-heading">会社概要</h1>
+      <dl class="p-company__list">
+        {COMPANY_INFO.map((item) => (
+          <div class="p-company__row">
+            <dt class="p-company__label">{item.label}</dt>
+            <dd class="p-company__value">{item.value}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  </section>
+</BaseLayout>

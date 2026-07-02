@@ -1,0 +1,44 @@
+---
+import type { Page } from 'astro';
+
+interface Props {
+  page: Page<unknown>;
+  basePath: string;
+}
+
+const { page, basePath } = Astro.props;
+
+const pageUrl = (pageNumber: number) => (pageNumber === 1 ? basePath : `${basePath}/${pageNumber}`);
+
+const pageNumbers = Array.from({ length: page.lastPage }, (_, i) => i + 1);
+---
+
+{page.lastPage > 1 && (
+  <nav class="c-pagination" aria-label="ページネーション">
+    <ul class="c-pagination__list">
+      <li class="c-pagination__item">
+        {page.url.prev ? (
+          <a href={page.url.prev} class="c-pagination__link" rel="prev">前へ</a>
+        ) : (
+          <span class="c-pagination__link is-disabled">前へ</span>
+        )}
+      </li>
+      {pageNumbers.map((pageNumber) => (
+        <li class="c-pagination__item">
+          {pageNumber === page.currentPage ? (
+            <span class="c-pagination__link is-current" aria-current="page">{pageNumber}</span>
+          ) : (
+            <a href={pageUrl(pageNumber)} class="c-pagination__link">{pageNumber}</a>
+          )}
+        </li>
+      ))}
+      <li class="c-pagination__item">
+        {page.url.next ? (
+          <a href={page.url.next} class="c-pagination__link" rel="next">次へ</a>
+        ) : (
+          <span class="c-pagination__link is-disabled">次へ</span>
+        )}
+      </li>
+    </ul>
+  </nav>
+)}

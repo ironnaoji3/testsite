@@ -1,0 +1,24 @@
+---
+import type { Category } from '@/types/microcms';
+
+interface Props {
+  categories: Category[];
+  activeCategoryId?: string;
+}
+
+const { categories, activeCategoryId } = Astro.props;
+---
+
+<nav class="p-product__categories" aria-label="カテゴリーで絞り込む">
+  <a href="/products" class:list={['p-product__category-link', { 'is-active': !activeCategoryId }]}>
+    すべて
+  </a>
+  {categories.map((category) => (
+    <a
+      href={`/products/category/${category.id}`}
+      class:list={['p-product__category-link', { 'is-active': activeCategoryId === category.id }]}
+    >
+      {category.name}
+    </a>
+  ))}
+</nav>

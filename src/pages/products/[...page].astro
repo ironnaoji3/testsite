@@ -1,0 +1,44 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import ProductCard from '@/components/ProductCard.astro';
+import Pagination from '@/components/Pagination.astro';
+import CategoryNav from '@/components/CategoryNav.astro';
+import { microcmsClient } from '@/lib/microcms';
+import { PRODUCTS_PAGE_SIZE } from '@/consts';
+import type { Category, Product } from '@/types/microcms';
+
+export const getStaticPaths = (async ({ paginate }) => {
+  const { contents: productList } = await microcmsClient.getList<Product>({
+    endpoint: 'products',
+    queries: { orders: '-publishedAt', limit: 100 },
+  });
+  const { contents: categories } = await microcmsClient.getList<Category>({
+    endpoint: 'categories',
+    queries: { limit: 100 },
+  });
+
+  return paginate(productList, { pageSize: PRODUCTS_PAGE_SIZE, props: { categories } });
+}) satisfies GetStaticPaths;
+
+const { page, categories } = Astro.props;
+---
+
+<BaseLayout title="商品紹介">
+  <section class="p-product">
+    <div class="l-container">
+      <h1 class="c-heading">商品紹介</h1>
+      <CategoryNav categories={categories} />
+      {page.data.length > 0 ? (
+        <div class="p-product__grid">
+          {page.data.map((product) => (
+            <ProductCard product={product} />
+          ))}
+        </div>
+      ) : (
+        <p>現在公開中の商品はありません。</p>
+      )}
+      <Pagination page={page} basePath="/products" />
+    </div>
+  </section>
+</BaseLayout>

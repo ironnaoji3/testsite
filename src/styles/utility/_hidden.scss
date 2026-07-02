@@ -1,0 +1,18 @@
+// 主にJavaScriptによる表示切り替え（フォームのステップ切り替え等）に使用する
+.u-hidden {
+  display: none !important;
+}
+
+// スパム対策ハニーポット等、人間には見せずスクリーンリーダーからも隠したいが
+// display:none だとボットに無視されがちな要素向けの視覚的に隠すユーティリティ
+.u-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  white-space: nowrap;
+  clip-path: inset(50%);
+  border: 0;
+}

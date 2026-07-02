@@ -1,0 +1,12 @@
+---
+import { NAV_ITEMS, SITE_NAME } from '@/consts';
+---
+
+<header class="l-header">
+  <a href="/" class="l-header__logo">{SITE_NAME}</a>
+  <nav class="l-header__nav">
+    {NAV_ITEMS.map((item) => (
+      <a href={item.href} class="l-header__nav-link">{item.label}</a>
+    ))}
+  </nav>
+</header>

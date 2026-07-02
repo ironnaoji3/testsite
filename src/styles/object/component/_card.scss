@@ -1,0 +1,59 @@
+@use '../../foundation/variables' as v;
+
+.c-card {
+  display: block;
+  overflow: hidden;
+  background-color: v.$color-white;
+  border: 1px solid v.$color-border;
+  border-radius: 8px;
+  transition: box-shadow 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  &__image {
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  &__body {
+    padding: 20px;
+  }
+
+  &__category {
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: v.$color-primary;
+  }
+
+  &__title {
+    margin-top: 8px;
+    font-size: 1.0625rem;
+    font-weight: bold;
+    line-height: 1.5;
+  }
+
+  &__excerpt {
+    margin-top: 8px;
+    overflow: hidden;
+    font-size: 0.875rem;
+    color: v.$color-text-sub;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  &__price {
+    margin-top: 12px;
+    font-size: 1rem;
+    font-weight: bold;
+    color: v.$color-primary;
+  }
+}

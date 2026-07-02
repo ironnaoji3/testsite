@@ -1,0 +1,22 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { SERVICES } from '@/consts';
+---
+
+<BaseLayout title="サービス紹介">
+  <section class="p-service">
+    <div class="l-container">
+      <h1 class="c-heading">サービス紹介</h1>
+      <div class="p-service__grid">
+        {SERVICES.map((service) => (
+          <div class="c-card p-service__card">
+            <div class="c-card__body">
+              <p class="c-card__title">{service.title}</p>
+              <p class="c-card__excerpt">{service.description}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

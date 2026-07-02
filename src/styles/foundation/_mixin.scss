@@ -1,0 +1,10 @@
+@use 'sass:map';
+@use 'variables' as v;
+
+// 指定ブレイクポイント以下で適用する（モバイルファースト運用のための max-width メディアクエリ）
+// 使用例: @include mq('md') { ... }
+@mixin mq($breakpoint: 'md') {
+  @media (max-width: map.get(v.$breakpoints, $breakpoint)) {
+    @content;
+  }
+}

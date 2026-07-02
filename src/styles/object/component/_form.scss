@@ -1,0 +1,57 @@
+@use '../../foundation/variables' as v;
+
+.c-form {
+  &__row {
+    padding: 24px 0;
+    border-bottom: 1px solid v.$color-border;
+
+    &:first-child {
+      padding-top: 0;
+    }
+  }
+
+  &__label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    font-weight: bold;
+  }
+
+  &__required {
+    padding: 2px 8px;
+    font-size: 0.6875rem;
+    color: v.$color-white;
+    background-color: v.$color-error;
+    border-radius: 4px;
+  }
+
+  &__control {
+    width: 100%;
+    padding: 12px 14px;
+    font-size: 1rem;
+    border: 1px solid v.$color-border;
+    border-radius: 4px;
+
+    &:focus {
+      outline: 2px solid v.$color-primary;
+      outline-offset: 1px;
+    }
+
+    &[aria-invalid='true'] {
+      border-color: v.$color-error;
+    }
+  }
+
+  &__textarea {
+    min-height: 160px;
+    resize: vertical;
+  }
+
+  &__error {
+    display: block;
+    margin-top: 8px;
+    font-size: 0.8125rem;
+    color: v.$color-error;
+  }
+}

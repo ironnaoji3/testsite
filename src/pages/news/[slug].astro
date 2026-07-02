@@ -1,0 +1,74 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { microcmsClient } from '@/lib/microcms';
+import type { News } from '@/types/microcms';
+
+type NewsNavItem = Pick<News, 'id' | 'title'>;
+
+interface Props {
+  prevNews: NewsNavItem | null;
+  nextNews: NewsNavItem | null;
+}
+
+export async function getStaticPaths() {
+  const { contents: newsList } = await microcmsClient.getList<News>({
+    endpoint: 'news',
+    queries: { orders: '-publishedAt', fields: ['id', 'title'], limit: 100 },
+  });
+
+  // newsListは新着順（-publishedAt）。1つ前の要素が新しいお知らせ、1つ後ろの要素が古いお知らせになる。
+  return newsList.map((news, index) => ({
+    params: { slug: news.id },
+    props: {
+      prevNews: index > 0 ? newsList[index - 1] : null,
+      nextNews: index < newsList.length - 1 ? newsList[index + 1] : null,
+    },
+  }));
+}
+
+const { slug } = Astro.params;
+const { prevNews, nextNews } = Astro.props;
+const news = await microcmsClient.getListDetail<News>({
+  endpoint: 'news',
+  contentId: slug!,
+});
+
+const formattedDate = new Date(news.publishedAt ?? news.createdAt).toLocaleDateString('ja-JP', {
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+});
+---
+
+<BaseLayout title={news.title}>
+  <article class="p-news-detail">
+    <div class="l-container">
+      <header class="p-news-detail__header">
+        <p class="p-news-detail__date">{formattedDate}</p>
+        <h1 class="p-news-detail__title">{news.title}</h1>
+      </header>
+      <div class="p-news-detail__body" set:html={news.content} />
+      <nav class="p-news-detail__nav" aria-label="前後のお知らせ">
+        <div class="p-news-detail__nav-item">
+          {prevNews && (
+            <a href={`/news/${prevNews.id}`} class="p-news-detail__nav-link">
+              <span class="p-news-detail__nav-label">前のお知らせ</span>
+              <span class="p-news-detail__nav-title">{prevNews.title}</span>
+            </a>
+          )}
+        </div>
+        <div class="p-news-detail__nav-item p-news-detail__nav-item--next">
+          {nextNews && (
+            <a href={`/news/${nextNews.id}`} class="p-news-detail__nav-link">
+              <span class="p-news-detail__nav-label">次のお知らせ</span>
+              <span class="p-news-detail__nav-title">{nextNews.title}</span>
+            </a>
+          )}
+        </div>
+      </nav>
+      <div class="c-actions">
+        <a href="/news" class="c-button">お知らせ一覧へ戻る</a>
+      </div>
+    </div>
+  </article>
+</BaseLayout>

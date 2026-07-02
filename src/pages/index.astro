@@ -1,0 +1,63 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import NewsListItem from '@/components/NewsListItem.astro';
+import ProductCard from '@/components/ProductCard.astro';
+import { microcmsClient } from '@/lib/microcms';
+import { SITE_NAME } from '@/consts';
+import type { News, Product } from '@/types/microcms';
+
+const { contents: newsList } = await microcmsClient.getList<News>({
+  endpoint: 'news',
+  queries: { orders: '-publishedAt', limit: 3 },
+});
+
+const { contents: productList } = await microcmsClient.getList<Product>({
+  endpoint: 'products',
+  queries: { orders: '-publishedAt', limit: 3 },
+});
+---
+
+<BaseLayout title={SITE_NAME}>
+  <section class="p-hero">
+    <div class="l-container">
+      <h1 class="p-hero__title">{SITE_NAME}</h1>
+      <p class="p-hero__lead">キャッチコピーやミッションをここに記載します。</p>
+    </div>
+  </section>
+
+  <section class="p-news">
+    <div class="l-container">
+      <h2 class="c-heading">お知らせ</h2>
+      {newsList.length > 0 ? (
+        <ul class="p-news__list">
+          {newsList.map((news) => (
+            <NewsListItem news={news} />
+          ))}
+        </ul>
+      ) : (
+        <p>現在お知らせはありません。</p>
+      )}
+      <div class="c-actions">
+        <a href="/news" class="c-button">お知らせ一覧を見る</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="p-product">
+    <div class="l-container">
+      <h2 class="c-heading">商品紹介</h2>
+      {productList.length > 0 ? (
+        <div class="p-product__grid">
+          {productList.map((product) => (
+            <ProductCard product={product} />
+          ))}
+        </div>
+      ) : (
+        <p>現在公開中の商品はありません。</p>
+      )}
+      <div class="c-actions">
+        <a href="/products" class="c-button">商品一覧を見る</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

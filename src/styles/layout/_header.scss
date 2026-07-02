@@ -1,0 +1,43 @@
+@use '../foundation/variables' as v;
+@use '../foundation/mixin' as m;
+
+.l-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 72px;
+  padding: 0 24px;
+  background-color: v.$color-bg;
+  border-bottom: 1px solid v.$color-border;
+
+  @include m.mq('md') {
+    height: 56px;
+    padding: 0 16px;
+  }
+
+  &__logo {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: v.$color-text;
+  }
+
+  &__nav {
+    display: flex;
+    gap: 32px;
+
+    @include m.mq('md') {
+      gap: 16px;
+    }
+  }
+
+  &__nav-link {
+    font-size: 0.9375rem;
+
+    &:hover {
+      color: v.$color-primary;
+    }
+  }
+}

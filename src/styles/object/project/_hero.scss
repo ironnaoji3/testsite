@@ -1,0 +1,34 @@
+@use '../../foundation/variables' as v;
+@use '../../foundation/mixin' as m;
+
+.p-hero {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 480px;
+  color: v.$color-white;
+  text-align: center;
+  background-color: v.$color-primary-dark;
+
+  @include m.mq('md') {
+    height: 320px;
+  }
+
+  &__title {
+    font-size: 2.5rem;
+    font-weight: bold;
+
+    @include m.mq('md') {
+      font-size: 1.75rem;
+    }
+  }
+
+  &__lead {
+    margin-top: 16px;
+    font-size: 1.125rem;
+
+    @include m.mq('md') {
+      font-size: 1rem;
+    }
+  }
+}

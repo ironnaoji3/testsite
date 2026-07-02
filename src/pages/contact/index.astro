@@ -1,0 +1,180 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="お問い合わせ">
+  <section class="p-contact">
+    <div class="l-container p-contact__inner">
+      <p class="p-contact__lead">お問い合わせ内容をご入力の上、「確認画面へ」を押してください。</p>
+
+      <div class="p-contact__step">
+        <span class="p-contact__step-item is-active" data-step-label="input">1. 入力</span>
+        <span class="p-contact__step-item" data-step-label="confirm">2. 確認</span>
+      </div>
+
+      <p class="c-form__error" id="form-error" role="alert" hidden></p>
+
+      <form id="contact-form" novalidate>
+        <div id="contact-input" data-step="input">
+          <div class="c-form__row">
+            <label class="c-form__label" for="name">
+              お名前<span class="c-form__required">必須</span>
+            </label>
+            <input class="c-form__control" type="text" id="name" name="name" required maxlength="100" autocomplete="name" />
+          </div>
+
+          <div class="c-form__row">
+            <label class="c-form__label" for="company">会社名</label>
+            <input class="c-form__control" type="text" id="company" name="company" maxlength="100" autocomplete="organization" />
+          </div>
+
+          <div class="c-form__row">
+            <label class="c-form__label" for="email">
+              メールアドレス<span class="c-form__required">必須</span>
+            </label>
+            <input class="c-form__control" type="email" id="email" name="email" required maxlength="256" autocomplete="email" />
+          </div>
+
+          <div class="c-form__row">
+            <label class="c-form__label" for="tel">電話番号</label>
+            <input class="c-form__control" type="tel" id="tel" name="tel" maxlength="20" autocomplete="tel" />
+          </div>
+
+          <div class="c-form__row">
+            <label class="c-form__label" for="message">
+              お問い合わせ内容<span class="c-form__required">必須</span>
+            </label>
+            <textarea class="c-form__control c-form__textarea" id="message" name="message" required maxlength="2000"></textarea>
+          </div>
+
+          <!-- スパム対策用ハニーポット。人には見えないが、ボットが自動入力した場合は送信を無視する -->
+          <div class="u-visually-hidden" aria-hidden="true">
+            <label for="hp-address">address</label>
+            <input type="text" id="hp-address" name="hp-address" tabindex="-1" autocomplete="off" />
+          </div>
+
+          <div class="c-actions">
+            <button type="button" class="c-button c-button--primary" id="to-confirm">確認画面へ</button>
+          </div>
+        </div>
+
+        <div id="contact-confirm" data-step="confirm" class="u-hidden">
+          <div class="p-contact__confirm-row">
+            <span class="p-contact__confirm-label">お名前</span>
+            <span class="p-contact__confirm-value" data-confirm="name"></span>
+          </div>
+          <div class="p-contact__confirm-row">
+            <span class="p-contact__confirm-label">会社名</span>
+            <span class="p-contact__confirm-value" data-confirm="company"></span>
+          </div>
+          <div class="p-contact__confirm-row">
+            <span class="p-contact__confirm-label">メールアドレス</span>
+            <span class="p-contact__confirm-value" data-confirm="email"></span>
+          </div>
+          <div class="p-contact__confirm-row">
+            <span class="p-contact__confirm-label">電話番号</span>
+            <span class="p-contact__confirm-value" data-confirm="tel"></span>
+          </div>
+          <div class="p-contact__confirm-row">
+            <span class="p-contact__confirm-label">お問い合わせ内容</span>
+            <span class="p-contact__confirm-value" data-confirm="message"></span>
+          </div>
+
+          <div class="c-actions">
+            <button type="button" class="c-button" id="to-input">内容を修正する</button>
+            <button type="submit" class="c-button c-button--primary" id="submit-button">送信する</button>
+          </div>
+          <p class="p-contact__submitting u-hidden" id="submitting-message">送信中です...</p>
+        </div>
+      </form>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  const FIELD_NAMES = ['name', 'company', 'email', 'tel', 'message'] as const;
+
+  const form = document.getElementById('contact-form') as HTMLFormElement;
+  const inputStep = document.getElementById('contact-input')!;
+  const confirmStep = document.getElementById('contact-confirm')!;
+  const stepLabels = document.querySelectorAll<HTMLElement>('[data-step-label]');
+  const toConfirmButton = document.getElementById('to-confirm')!;
+  const toInputButton = document.getElementById('to-input') as HTMLButtonElement;
+  const submitButton = document.getElementById('submit-button') as HTMLButtonElement;
+  const submittingMessage = document.getElementById('submitting-message')!;
+  const formError = document.getElementById('form-error')!;
+
+  function showError(message: string) {
+    formError.textContent = message;
+    formError.hidden = false;
+  }
+
+  function clearError() {
+    formError.hidden = true;
+    formError.textContent = '';
+  }
+
+  function setStep(step: 'input' | 'confirm') {
+    const isConfirm = step === 'confirm';
+    inputStep.classList.toggle('u-hidden', isConfirm);
+    confirmStep.classList.toggle('u-hidden', !isConfirm);
+    stepLabels.forEach((el) => {
+      el.classList.toggle('is-active', el.dataset.stepLabel === step);
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  toConfirmButton.addEventListener('click', () => {
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+    clearError();
+
+    const formData = new FormData(form);
+    for (const name of FIELD_NAMES) {
+      const value = String(formData.get(name) ?? '').trim();
+      const target = confirmStep.querySelector(`[data-confirm="${name}"]`);
+      if (target) target.textContent = value || '（未入力）';
+    }
+    setStep('confirm');
+  });
+
+  toInputButton.addEventListener('click', () => {
+    clearError();
+    setStep('input');
+  });
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    clearError();
+
+    submitButton.disabled = true;
+    toInputButton.disabled = true;
+    submittingMessage.classList.remove('u-hidden');
+
+    const formData = new FormData(form);
+    const payload = Object.fromEntries(formData.entries());
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const result = await response.json().catch(() => null);
+        throw new Error(result?.message ?? '送信に失敗しました。時間をおいて再度お試しください。');
+      }
+
+      // 完了ページへ遷移（サンクスページ側でGA4等のコンバージョン計測を行う）
+      window.location.href = '/contact/thanks';
+    } catch (error) {
+      showError(error instanceof Error ? error.message : '送信に失敗しました。時間をおいて再度お試しください。');
+      submitButton.disabled = false;
+      toInputButton.disabled = false;
+      submittingMessage.classList.add('u-hidden');
+    }
+  });
+</script>

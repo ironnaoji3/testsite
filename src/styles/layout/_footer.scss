@@ -1,0 +1,34 @@
+@use '../foundation/variables' as v;
+@use '../foundation/mixin' as m;
+
+.l-footer {
+  padding: 48px 24px;
+  color: v.$color-white;
+  background-color: v.$color-primary-dark;
+
+  @include m.mq('md') {
+    padding: 32px 16px;
+  }
+
+  &__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    max-width: v.$container-width;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  &__nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 24px;
+  }
+
+  &__copyright {
+    font-size: 0.8125rem;
+    opacity: 0.8;
+  }
+}

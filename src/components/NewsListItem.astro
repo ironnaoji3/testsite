@@ -1,0 +1,20 @@
+---
+import type { News } from '@/types/microcms';
+
+interface Props {
+  news: News;
+}
+
+const { news } = Astro.props;
+
+const formattedDate = new Date(news.publishedAt ?? news.createdAt).toLocaleDateString('ja-JP', {
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+});
+---
+
+<li class="p-news__item">
+  <span class="p-news__date">{formattedDate}</span>
+  <a href={`/news/${news.id}`} class="p-news__title">{news.title}</a>
+</li>

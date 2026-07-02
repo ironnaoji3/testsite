@@ -1,0 +1,25 @@
+@use '../../foundation/variables' as v;
+@use '../../foundation/mixin' as m;
+
+.c-heading {
+  font-size: 1.75rem;
+  font-weight: bold;
+  text-align: center;
+
+  @include m.mq('md') {
+    font-size: 1.5rem;
+  }
+
+  &--page {
+    padding: 48px 0;
+    font-size: 2rem;
+    color: v.$color-white;
+    text-align: center;
+    background-color: v.$color-primary;
+
+    @include m.mq('md') {
+      padding: 32px 0;
+      font-size: 1.625rem;
+    }
+  }
+}

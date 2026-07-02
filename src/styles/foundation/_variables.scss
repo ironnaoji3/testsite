@@ -1,0 +1,23 @@
+// カラー
+$color-primary: #1a5276;
+$color-primary-dark: #133c56;
+$color-text: #222222;
+$color-text-sub: #666666;
+$color-border: #dddddd;
+$color-bg: #ffffff;
+$color-bg-sub: #f7f7f7;
+$color-error: #c0392b;
+$color-white: #ffffff;
+
+// フォント
+$font-family-base: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', Meiryo, sans-serif;
+
+// レイアウト
+$container-width: 1120px;
+
+// ブレイクポイント（このキー名は mixin.scss の mq() から参照する）
+$breakpoints: (
+  'sm': 480px,
+  'md': 768px,
+  'lg': 1024px,
+);

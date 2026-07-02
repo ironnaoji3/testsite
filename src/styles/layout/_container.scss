@@ -1,0 +1,13 @@
+@use '../foundation/variables' as v;
+@use '../foundation/mixin' as m;
+
+.l-container {
+  width: 100%;
+  max-width: v.$container-width;
+  margin: 0 auto;
+  padding: 0 24px;
+
+  @include m.mq('md') {
+    padding: 0 16px;
+  }
+}

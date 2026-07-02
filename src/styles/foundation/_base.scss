@@ -1,0 +1,20 @@
+@use 'variables' as v;
+
+html {
+  font-size: 16px;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  font-family: v.$font-family-base;
+  color: v.$color-text;
+  line-height: 1.7;
+  background-color: v.$color-bg;
+  -webkit-font-smoothing: antialiased;
+}
+
+main {
+  flex: 1;
+}

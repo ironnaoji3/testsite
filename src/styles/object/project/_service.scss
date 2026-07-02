@@ -1,0 +1,29 @@
+@use '../../foundation/mixin' as m;
+
+.p-service {
+  padding: 64px 0;
+
+  @include m.mq('md') {
+    padding: 40px 0;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+    margin-top: 40px;
+
+    @include m.mq('lg') {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @include m.mq('sm') {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+  }
+
+  &__card {
+    height: 100%;
+  }
+}

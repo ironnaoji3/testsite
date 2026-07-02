@@ -1,0 +1,38 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import NewsListItem from '@/components/NewsListItem.astro';
+import Pagination from '@/components/Pagination.astro';
+import { microcmsClient } from '@/lib/microcms';
+import { NEWS_PAGE_SIZE } from '@/consts';
+import type { News } from '@/types/microcms';
+
+export const getStaticPaths = (async ({ paginate }) => {
+  const { contents: newsList } = await microcmsClient.getList<News>({
+    endpoint: 'news',
+    queries: { orders: '-publishedAt', limit: 100 },
+  });
+
+  return paginate(newsList, { pageSize: NEWS_PAGE_SIZE });
+}) satisfies GetStaticPaths;
+
+const { page } = Astro.props;
+---
+
+<BaseLayout title="お知らせ">
+  <section class="p-news">
+    <div class="l-container">
+      <h1 class="c-heading">お知らせ</h1>
+      {page.data.length > 0 ? (
+        <ul class="p-news__list">
+          {page.data.map((news) => (
+            <NewsListItem news={news} />
+          ))}
+        </ul>
+      ) : (
+        <p>現在お知らせはありません。</p>
+      )}
+      <Pagination page={page} basePath="/news" />
+    </div>
+  </section>
+</BaseLayout>

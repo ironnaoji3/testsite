@@ -1,0 +1,40 @@
+@use '../../foundation/variables' as v;
+@use '../../foundation/mixin' as m;
+
+.p-company {
+  padding: 64px 0;
+
+  @include m.mq('md') {
+    padding: 40px 0;
+  }
+
+  &__list {
+    max-width: 720px;
+    margin: 40px auto 0;
+    border-top: 1px solid v.$color-border;
+  }
+
+  &__row {
+    display: flex;
+    gap: 24px;
+    padding: 20px 0;
+    border-bottom: 1px solid v.$color-border;
+
+    @include m.mq('sm') {
+      flex-direction: column;
+      gap: 4px;
+    }
+  }
+
+  &__label {
+    flex-shrink: 0;
+    width: 140px;
+    font-weight: bold;
+  }
+
+  &__value {
+    flex: 1;
+    color: v.$color-text-sub;
+    white-space: pre-wrap;
+  }
+}

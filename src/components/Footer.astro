@@ -1,0 +1,16 @@
+---
+import { NAV_ITEMS, SITE_NAME } from '@/consts';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="l-footer">
+  <div class="l-footer__inner">
+    <nav class="l-footer__nav">
+      {NAV_ITEMS.map((item) => (
+        <a href={item.href} class="l-footer__nav-link">{item.label}</a>
+      ))}
+    </nav>
+    <p class="l-footer__copyright">&copy; {year} {SITE_NAME}</p>
+  </div>
+</footer>
